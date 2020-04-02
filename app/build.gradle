@@ -4,6 +4,7 @@ android {
     compileSdkVersion 28
     buildToolsVersion "29.0.3"
     defaultConfig {
+        resValue "string", "google_maps_key", (project.findProperty("GOOGLE_MAPS_API_KEY") ?: "")
         applicationId "com.hsleiden.ikpmd_project"
         minSdkVersion 15
         targetSdkVersion 28
@@ -26,4 +27,6 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    implementation 'com.google.android.gms:play-services-maps:17.0.0'
+    implementation 'androidx.cardview:cardview:1.0.0'
 }
