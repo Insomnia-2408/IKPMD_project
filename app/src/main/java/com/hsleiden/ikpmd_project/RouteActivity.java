@@ -2,26 +2,28 @@ package com.hsleiden.ikpmd_project;
 
 import androidx.fragment.app.FragmentActivity;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
-import android.widget.LinearLayout;
-import android.widget.PopupWindow;
+import android.widget.Button;
+import android.widget.EditText;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.hsleiden.ikpmd_project.Helpers.MapHelper;
+import com.hsleiden.ikpmd_project.Helpers.PopupHelper;
 
 public class RouteActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+    private MapHelper mapHelper;
+    private PopupHelper popup;
+    private View popupView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,35 +33,11 @@ public class RouteActivity extends FragmentActivity implements OnMapReadyCallbac
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        this.popup = new PopupHelper(getSystemService(LAYOUT_INFLATER_SERVICE));
+        this.mapHelper = new MapHelper("Map");
+
     }
-
-    public void showPopup(View view) {
-
-        // inflate the layout of the popup window
-        LayoutInflater inflater = (LayoutInflater)
-                getSystemService(LAYOUT_INFLATER_SERVICE);
-        View popupView = inflater.inflate(R.layout.popup_route, null);
-
-        // create the popup window
-        int width = LinearLayout.LayoutParams.WRAP_CONTENT;
-        int height = LinearLayout.LayoutParams.WRAP_CONTENT;
-        boolean focusable = true; // lets taps outside the popup also dismiss it
-        final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
-
-        // show the popup window
-        // which view you pass in doesn't matter, it is only used for the window tolken
-        popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
-
-        // dismiss the popup window when touched
-        popupView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                popupWindow.dismiss();
-                return true;
-            }
-        });
-    }
-
 
     /**
      * Manipulates the map once available.
@@ -78,6 +56,31 @@ public class RouteActivity extends FragmentActivity implements OnMapReadyCallbac
         LatLng amsterdam = new LatLng(52, 5);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(amsterdam));
 
-        showPopup(getWindow().getDecorView().getRootView());
+        setUpPopup();
+
+    }
+
+    public void setUpPopup() {
+        this.popupView = this.popup.showRoutePopup(getWindow().getDecorView().getRootView());
+        final EditText location = (EditText) popupView.findViewById(R.id.location);
+
+        Button showOnMap = (Button) popupView.findViewById(R.id.showOnMap);
+        showOnMap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String locationText = location.getText().toString();
+                updateMap(locationText);
+            }
+        });
+    }
+
+    private void updateMap(String locationText) {
+        LatLng coordinates = mapHelper.getLocation(locationText);
+        if(coordinates != null) {
+            mMap.addMarker(new MarkerOptions()).setPosition(coordinates);
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(coordinates));
+        } else {
+            Log.d("Error", "Location not found");
+        }
     }
 }
