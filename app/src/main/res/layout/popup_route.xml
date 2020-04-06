@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="300dp"
-    android:layout_height="150dp"
+    android:layout_height="225dp"
     android:layout_gravity="center"
     android:background="@color/cardview_dark_background"
     android:orientation="vertical"
     android:padding="5dp">
 
     <TextView
-        android:id="@+id/title"
+        android:id="@+id/titleCurrentLocation"
         android:layout_width="match_parent"
         android:layout_height="30dp"
         android:text="Vul uw huidige locatie in:"
@@ -16,10 +16,28 @@
         android:textStyle="bold" />
 
     <EditText
-        android:id="@+id/location"
+        android:id="@+id/currentLocation"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:hint="Hillegom"
+        android:textColor="#fff"
+        android:textColorHint="#fff"
+        android:backgroundTint="#fff"
+        android:layout_marginBottom="5dp"/>
+
+    <TextView
+        android:id="@+id/titleDestination"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:text="Vul uw bestemming in:"
+        android:textColor="#fff"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/destination"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:hint="..."
         android:textColor="#fff"
         android:textColorHint="#fff"
         android:backgroundTint="#fff"

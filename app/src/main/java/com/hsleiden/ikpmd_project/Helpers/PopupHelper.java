@@ -42,7 +42,7 @@ public class PopupHelper {
         popupView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                popupWindow.dismiss();
+                popupWindow.update();
                 return true;
             }
         });
@@ -66,6 +66,15 @@ public class PopupHelper {
         // show the popup window
         // which view you pass in doesn't matter, it is only used for the window tolken
         popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
+
+        popupView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                popupWindow.update();
+                return true;
+            }
+        });
+
 
         return popupView;
 
