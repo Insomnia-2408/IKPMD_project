@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="300dp"
+    android:layout_height="225dp"
+    android:layout_gravity="center"
+    android:background="@color/cardview_dark_background"
+    android:orientation="vertical"
+    android:padding="5dp">
+
+    <TextView
+        android:id="@+id/description"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:text="text"
+        android:textColor="#fff"
+        android:textStyle="bold" />
+
+    <LinearLayout>
+        <Button
+            android:id="@+id/ok"
+            android:layout_width="150dp"
+            android:layout_height="30dp"
+            android:text="Ok"/>
+        <Button
+            android:id="@+id/cancel"
+            android:layout_width="150dp"
+            android:layout_height="30dp"
+            android:text="Cancel"/>
+    </LinearLayout>
+
+</LinearLayout>
