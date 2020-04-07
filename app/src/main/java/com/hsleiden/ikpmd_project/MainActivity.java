@@ -8,6 +8,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.hsleiden.ikpmd_project.Helpers.MapHelper;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -16,6 +18,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         makeToast();
         setClickListener();
+        MapHelper.initializeMaps();
 
     }
 
