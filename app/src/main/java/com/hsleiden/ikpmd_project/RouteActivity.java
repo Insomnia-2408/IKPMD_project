@@ -1,14 +1,18 @@
 package com.hsleiden.ikpmd_project;
 
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.FragmentActivity;
 
 import android.app.ActivityManager;
+import android.app.Dialog;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -27,7 +31,6 @@ public class RouteActivity extends FragmentActivity implements OnMapReadyCallbac
     private GoogleMap mMap;
     private MapHelper mapHelper;
     private PopupHelper popup;
-    private View popupView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,15 +43,7 @@ public class RouteActivity extends FragmentActivity implements OnMapReadyCallbac
 
         this.mapHelper = new MapHelper(this);
 
-        this.popup = new PopupHelper(getSystemService(LAYOUT_INFLATER_SERVICE));
-//        this.mapHelper = new MapHelper("Map");
-//        startService(new Intent(this, MapHelperDepricated.class));
-//        ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
-//        Log.d("getRunningServices: ", manager.getRunningServices(Integer.MAX_VALUE).size()+"");
-//        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-//            Log.d("service: ", service.service.getClassName());
-//
-//        }
+        this.popup = new PopupHelper(getSystemService(LAYOUT_INFLATER_SERVICE), this);
 
     }
 
@@ -61,6 +56,7 @@ public class RouteActivity extends FragmentActivity implements OnMapReadyCallbac
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
      */
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -73,24 +69,22 @@ public class RouteActivity extends FragmentActivity implements OnMapReadyCallbac
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void setUpPopup() {
-        this.popupView = this.popup.showRoutePopup(getWindow().getDecorView().getRootView());
-        final EditText currentLocation = (EditText) popupView.findViewById(R.id.currentLocation);
-        final EditText destination = (EditText) popupView.findViewById(R.id.destination);
+        final Dialog dialog = this.popup.showPrompt(R.layout.popup_route);
+        final EditText currentLocation = (EditText) dialog.findViewById(R.id.currentLocation);
+        final EditText destination = (EditText) dialog.findViewById(R.id.destination);
 
-        Button showOnMap = (Button) popupView.findViewById(R.id.showOnMap);
+        Button showOnMap = (Button) dialog.findViewById(R.id.showOnMap);
         showOnMap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String locationText = currentLocation.getText().toString();
                 String destinationText = destination.getText().toString();
                 updateMap(locationText);
+                dialog.dismiss();
             }
         });
-    }
-
-    private void drawRoute () {
-
     }
 
     private void updateMap(String locationText) {

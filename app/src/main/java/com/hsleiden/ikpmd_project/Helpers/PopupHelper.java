@@ -1,82 +1,89 @@
 package com.hsleiden.ikpmd_project.Helpers;
 
 import android.app.Activity;
-import android.os.Bundle;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.MotionEvent;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
+import android.os.Build;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.PopupWindow;
+
+import androidx.annotation.RequiresApi;
 
 import com.hsleiden.ikpmd_project.R;
 
 public class PopupHelper {
 
     private Object service;
+    private AlertDialog.Builder builder;
+    private Activity activity;
 
-   public PopupHelper(Object service) {
+   public PopupHelper(Object service, Activity activity) {
         this.service = service;
+        this.builder = new AlertDialog.Builder(activity);
+        this.activity = activity;
    }
 
-    public View showPopup(View view, int layout) {
+   @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+   public Dialog showPrompt(int layout) {
 
-        LayoutInflater inflater = (LayoutInflater)
-                service;
+      final Dialog dialog = builder
+              .setView(layout)
+              .create();
 
-        View popupView = inflater.inflate(layout, null);
+       dialog.setOnShowListener(new DialogInterface.OnShowListener() {
 
-        // create the popup window
-        int width = LinearLayout.LayoutParams.WRAP_CONTENT;
-        int height = LinearLayout.LayoutParams.WRAP_CONTENT;
-        boolean focusable = true; // lets taps outside the popup also dismiss it
-        final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
+           @Override
+           public void onShow(DialogInterface dialogInterface) {
 
-        // show the popup window
-        // which view you pass in doesn't matter, it is only used for the window tolken
-        popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
+               Button button = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
+               button.setOnClickListener(new View.OnClickListener() {
 
-        // dismiss the popup window when touched
-        popupView.setOnTouchListener(new View.OnTouchListener() {
+                   @Override
+                   public void onClick(View view) {
+                       // TODO Do something
+
+                       //Dismiss once everything is OK.
+                       dialog.dismiss();
+                   }
+               });
+           }
+       });
+
+       dialog.show();
+       return dialog;
+
+   }
+
+    public void showConfirmPopup(String description) {
+
+        final Dialog dialog = this.builder
+                .setTitle(R.string.title)
+                .setMessage(description)
+                .setPositiveButton(android.R.string.ok, null) //Set to null. We override the onclick
+                .setNegativeButton(android.R.string.cancel, null)
+                .create();
+
+        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                popupWindow.update();
-                return true;
+            public void onShow(DialogInterface dialogInterface) {
+
+                Button button = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
+                button.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View view) {
+                        // TODO Do something
+
+                        //Dismiss once everything is OK.
+                        dialog.dismiss();
+                    }
+                });
             }
         });
 
-        return popupView;
-    }
-
-    public View showRoutePopup(View view) {
-
-        LayoutInflater inflater = (LayoutInflater)
-                service;
-
-        final View popupView = inflater.inflate(R.layout.popup_route, null);
-
-        // create the popup window
-        int width = LinearLayout.LayoutParams.WRAP_CONTENT;
-        int height = LinearLayout.LayoutParams.WRAP_CONTENT;
-        boolean focusable = true; // lets taps outside the popup also dismiss it
-        final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
-
-        // show the popup window
-        // which view you pass in doesn't matter, it is only used for the window tolken
-        popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
-
-        popupView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                popupWindow.update();
-                return true;
-            }
-        });
-
-
-        return popupView;
+        dialog.show();
 
     }
 
