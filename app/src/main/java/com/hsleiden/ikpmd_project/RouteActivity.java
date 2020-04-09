@@ -12,7 +12,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -20,10 +19,12 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.maps.errors.ApiException;
 import com.hsleiden.ikpmd_project.Helpers.MapHelper;
 import com.hsleiden.ikpmd_project.Helpers.MapHelperDepricated;
 import com.hsleiden.ikpmd_project.Helpers.PopupHelper;
 
+import java.io.IOException;
 import java.util.Map;
 
 public class RouteActivity extends FragmentActivity implements OnMapReadyCallback {
@@ -40,8 +41,6 @@ public class RouteActivity extends FragmentActivity implements OnMapReadyCallbac
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
-        this.mapHelper = new MapHelper(this);
 
         this.popup = new PopupHelper(getSystemService(LAYOUT_INFLATER_SERVICE), this);
 
@@ -81,14 +80,22 @@ public class RouteActivity extends FragmentActivity implements OnMapReadyCallbac
             public void onClick(View v) {
                 String locationText = currentLocation.getText().toString();
                 String destinationText = destination.getText().toString();
-                updateMap(locationText);
+                try {
+                    updateMap(locationText);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ApiException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 dialog.dismiss();
             }
         });
     }
 
-    private void updateMap(String locationText) {
-        LatLng coordinates = mapHelper.getLocation(locationText);
+    private void updateMap(String locationText) throws InterruptedException, ApiException, IOException {
+        LatLng coordinates = MapHelper.getLocation(locationText);
         if(coordinates != null) {
             mMap.addMarker(new MarkerOptions()).setPosition(coordinates);
             mMap.moveCamera(CameraUpdateFactory.newLatLng(coordinates));
