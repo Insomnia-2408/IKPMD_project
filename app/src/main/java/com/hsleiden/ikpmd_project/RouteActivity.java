@@ -4,7 +4,6 @@ import androidx.annotation.RequiresApi;
 import androidx.fragment.app.FragmentActivity;
 
 import android.app.Dialog;
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -16,6 +15,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 import android.widget.Toolbar;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -26,6 +26,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.hsleiden.ikpmd_project.Helpers.MapHelper;
 import com.hsleiden.ikpmd_project.Helpers.PopupHelper;
+import com.hsleiden.ikpmd_project.Models.Route;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -37,7 +38,7 @@ public class RouteActivity extends FragmentActivity implements OnMapReadyCallbac
     private GoogleMap mMap;
     private MapHelper mapHelper;
     private PopupHelper popup;
-    private AsyncTask currentTask;
+    private Route route;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +53,8 @@ public class RouteActivity extends FragmentActivity implements OnMapReadyCallbac
 
         this.mapHelper = new MapHelper();
         this.mapHelper.initializeMaps();
+
+        this.route = new Route();
 
     }
 
@@ -135,7 +138,7 @@ public class RouteActivity extends FragmentActivity implements OnMapReadyCallbac
                 String currentLocationText = currentLocation.getText().toString();
                 String destinationText = destination.getText().toString();
                 try {
-                    updateMap(currentLocationText, destinationText);
+                    processData(currentLocationText, destinationText);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -144,9 +147,12 @@ public class RouteActivity extends FragmentActivity implements OnMapReadyCallbac
         });
     }
 
-    private void updateMap(String currentLocationText, String destinationText) throws InterruptedException {
+    private void processData(String currentLocationText, String destinationText) throws InterruptedException {
 
         createToolbar();
+
+        this.route.setStart(currentLocationText);
+        this.route.setEnd(destinationText);
 
         addMarkers(currentLocationText, destinationText);
 
@@ -156,8 +162,7 @@ public class RouteActivity extends FragmentActivity implements OnMapReadyCallbac
 
         AsyncTask<String, Void, List<LatLng>> result = null;
 
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-            result = this.mapHelper.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, currentLocation, destination);
+        result = this.mapHelper.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, currentLocation, destination);
 
         LatLng locCurrent = null;
         LatLng locDest = null;
@@ -169,6 +174,10 @@ public class RouteActivity extends FragmentActivity implements OnMapReadyCallbac
             e.printStackTrace();
         }
         if(locCurrent != null && locDest != null) {
+
+            this.route.setStartLatLng(locCurrent);
+            this.route.setEndLatLng(locDest);
+
             MarkerOptions markerOptions = new MarkerOptions();
             markerOptions.position(locCurrent);
             mMap.addMarker(markerOptions);
@@ -177,6 +186,10 @@ public class RouteActivity extends FragmentActivity implements OnMapReadyCallbac
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(locDest, 10));
 
         } else {
+            Toast toast = new Toast(this);
+            toast.setText("Er ging iets mis, probeer later opnieuw");
+            toast.setDuration(Toast.LENGTH_LONG);
+            toast.show();
             Log.d("Error", "Location not found");
         }
 
