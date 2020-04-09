@@ -3,31 +3,31 @@ package com.hsleiden.ikpmd_project.Helpers;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Rect;
 import android.os.Build;
-import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
-import android.widget.Spinner;
 
 import androidx.annotation.RequiresApi;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.hsleiden.ikpmd_project.R;
 
 public class PopupHelper {
 
-    private Object service;
+    private LayoutInflater service;
     private AlertDialog.Builder builder;
     private Activity activity;
 
-   public PopupHelper(Object service, Activity activity) {
+   public PopupHelper(LayoutInflater service, Activity activity) {
         this.service = service;
         this.builder = new AlertDialog.Builder(activity);
         this.activity = activity;
@@ -36,9 +36,11 @@ public class PopupHelper {
    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
    public Dialog showPrompt(int layout) {
 
-      final Dialog dialog = builder
+      Dialog dialog = builder
               .setView(layout)
               .create();
+
+      dialog.setCanceledOnTouchOutside(false);
 
        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
 
@@ -66,12 +68,22 @@ public class PopupHelper {
 
     public void showConfirmPopup(String description) {
 
-        final Dialog dialog = this.builder
+        Dialog dialog = this.builder
                 .setTitle(R.string.title)
                 .setMessage(description)
-                .setPositiveButton(android.R.string.ok, null) //Set to null. We override the onclick
-                .setNegativeButton(android.R.string.cancel, null)
+                .setPositiveButton("Ja", null) //Set to null. We override the onclick
+                .setNegativeButton("Nee", null)
+                .setView(null)
                 .create();
+
+        Window window = dialog.getWindow();
+        WindowManager.LayoutParams wlp = window.getAttributes();
+
+        wlp.gravity = Gravity.BOTTOM;
+        wlp.flags &= ~WindowManager.LayoutParams.FLAG_DIM_BEHIND;
+        window.setAttributes(wlp);
+
+        dialog.setCanceledOnTouchOutside(false);
 
         dialog.setOnShowListener(new DialogInterface.OnShowListener() {
 

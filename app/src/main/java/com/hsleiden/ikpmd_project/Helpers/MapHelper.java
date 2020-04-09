@@ -1,66 +1,58 @@
 package com.hsleiden.ikpmd_project.Helpers;
 
-import android.content.Context;
-import android.location.Address;
-import android.location.Geocoder;
+import android.os.AsyncTask;
 import android.util.Log;
 
-import com.byteowls.jopencage.JOpenCageGeocoder;
-import com.byteowls.jopencage.model.JOpenCageForwardRequest;
-import com.byteowls.jopencage.model.JOpenCageLatLng;
-import com.byteowls.jopencage.model.JOpenCageResponse;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.GeoApiContext;
-import com.google.maps.GeocodingApi;
-import com.google.maps.GeocodingApiRequest;
-import com.google.maps.GeolocationApiRequest;
-import com.google.maps.errors.ApiException;
+import com.ktopencage.OpenCageGeoCoder;
+import com.ktopencage.ResponseException;
+import com.ktopencage.model.OpenCageRequest;
+import com.ktopencage.model.OpenCageResponse;
+import com.ktopencage.model.OpenCageResult;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
+import java.util.Objects;
 
-public class MapHelper {
+public class MapHelper extends AsyncTask<String, Void, List<LatLng>> {
 
     private static GeoApiContext geoApiContext;
-    private static JOpenCageGeocoder jOpenCageGeocoder;
+    private static OpenCageGeoCoder openCageGeocoder;
 
     public MapHelper() {
     }
 
-    public static LatLng getLocation(String locationText) throws InterruptedException, ApiException, IOException {
+    @Override
+    protected List<LatLng> doInBackground(String... strings) {
+        List<LatLng> latLongs = new ArrayList<LatLng>();
+        for(String adress : strings) {
+            OpenCageRequest request = new OpenCageRequest(adress);
+            request.setRestrictToCountryCode("NL");
 
-        JOpenCageForwardRequest request = new JOpenCageForwardRequest(locationText);
-        request.setRestrictToCountryCode("NL");
+            OpenCageResponse response = null;
 
-        JOpenCageResponse response = jOpenCageGeocoder.forward(request);
-        JOpenCageLatLng result = response.getFirstPosition();
+            try {
+                response = openCageGeocoder.handleRequest(request);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ResponseException e) {
+                e.printStackTrace();
+            }
 
-        Log.d("Result", result.toString());
+            OpenCageResult result = Objects.requireNonNull(response).getResults().get(0);
 
-//        GeocodingApiRequest request = GeocodingApi.geocode(geoApiContext, locationText);
-//
-//        Log.d("response", Arrays.toString(request.await()));
-
-//        Geocoder geocoder = new Geocoder(context, Locale.getDefault());
-//
-//        LatLng location = null;
-//        try {
-//            List<Address> locations = geocoder.getFromLocationName(locationText, 1);
-//            Log.d("addresses", locations.get(0).toString());
-//            location = new LatLng(locations.get(0).getLatitude(), locations.get(0).getLongitude());
-//        } catch (IOException e) {
-//            Log.d("Error", e.getMessage());
-//        }
-//        return location;
-
-        return null;
-
+            LatLng latLng = new LatLng(result.getGeometry().getLat(), result.getGeometry().getLng());
+            Log.d("Result", String.valueOf(latLng));
+            latLongs.add(latLng);
+        }
+        return latLongs;
     }
 
-    public static void initializeMaps() {
-        jOpenCageGeocoder = new JOpenCageGeocoder("8435298977184b45bd1157a149b04c86");
+    public void initializeMaps() {
+        openCageGeocoder = new OpenCageGeoCoder("8435298977184b45bd1157a149b04c86");
     }
 
 }

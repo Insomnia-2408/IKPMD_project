@@ -19,7 +19,7 @@
         android:id="@+id/currentLocation"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:hint="Hillegom"
+        android:hint="..."
         android:textColor="#fff"
         android:textColorHint="#fff"
         android:backgroundTint="#fff"

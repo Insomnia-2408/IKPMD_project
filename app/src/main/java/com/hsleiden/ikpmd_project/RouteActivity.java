@@ -3,15 +3,20 @@ package com.hsleiden.ikpmd_project;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.FragmentActivity;
 
-import android.app.ActivityManager;
 import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.Toolbar;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -19,19 +24,20 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.maps.errors.ApiException;
 import com.hsleiden.ikpmd_project.Helpers.MapHelper;
-import com.hsleiden.ikpmd_project.Helpers.MapHelperDepricated;
 import com.hsleiden.ikpmd_project.Helpers.PopupHelper;
 
-import java.io.IOException;
-import java.util.Map;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class RouteActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private MapHelper mapHelper;
     private PopupHelper popup;
+    private AsyncTask currentTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +48,55 @@ public class RouteActivity extends FragmentActivity implements OnMapReadyCallbac
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        this.popup = new PopupHelper(getSystemService(LAYOUT_INFLATER_SERVICE), this);
+        this.popup = new PopupHelper((LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE), this);
+
+        this.mapHelper = new MapHelper();
+        this.mapHelper.initializeMaps();
+
+    }
+
+    private void createToolbar() {
+
+        Button tryAgain = new Button(this);
+        tryAgain.setText("Probeer opnieuw");
+        tryAgain.setBackgroundColor(View.INVISIBLE);
+        tryAgain.setGravity(Gravity.LEFT);
+        tryAgain.setTextColor(Color.WHITE);
+
+        tryAgain.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    setUpPopup();
+                    recreate();
+                }
+
+            }
+        });
+
+        Button succes = new Button(this);
+        succes.setText("Ok");
+        succes.setBackgroundColor(View.INVISIBLE);
+        succes.setGravity(Gravity.RIGHT);
+        succes.setTextColor(Color.WHITE);
+
+        succes.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+              Log.d("Succes", "true");
+            }
+        });
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Toolbar toolbar = new Toolbar(this);
+            toolbar.setBackgroundColor(Color.BLACK);
+            toolbar.addView(tryAgain, 0);
+            toolbar.addView(succes, 1);
+            addContentView(toolbar, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        }
 
     }
 
@@ -62,7 +116,7 @@ public class RouteActivity extends FragmentActivity implements OnMapReadyCallbac
 
         // Move the camera
         LatLng amsterdam = new LatLng(52, 5);
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(amsterdam));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(amsterdam, 7.5f));
 
         setUpPopup();
 
@@ -78,15 +132,11 @@ public class RouteActivity extends FragmentActivity implements OnMapReadyCallbac
         showOnMap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String locationText = currentLocation.getText().toString();
+                String currentLocationText = currentLocation.getText().toString();
                 String destinationText = destination.getText().toString();
                 try {
-                    updateMap(locationText);
+                    updateMap(currentLocationText, destinationText);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ApiException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
                     e.printStackTrace();
                 }
                 dialog.dismiss();
@@ -94,14 +144,42 @@ public class RouteActivity extends FragmentActivity implements OnMapReadyCallbac
         });
     }
 
-    private void updateMap(String locationText) throws InterruptedException, ApiException, IOException {
-        LatLng coordinates = MapHelper.getLocation(locationText);
-        if(coordinates != null) {
-            mMap.addMarker(new MarkerOptions()).setPosition(coordinates);
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(coordinates));
+    private void updateMap(String currentLocationText, String destinationText) throws InterruptedException {
+
+        createToolbar();
+
+        addMarkers(currentLocationText, destinationText);
+
+    }
+
+    private void addMarkers(String currentLocation, String destination) {
+
+        AsyncTask<String, Void, List<LatLng>> result = null;
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+            result = this.mapHelper.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, currentLocation, destination);
+
+        LatLng locCurrent = null;
+        LatLng locDest = null;
+        try {
+            List<LatLng> results = result.get();
+            locCurrent = results.get(0);
+            locDest = results.get(1);
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        if(locCurrent != null && locDest != null) {
+            MarkerOptions markerOptions = new MarkerOptions();
+            markerOptions.position(locCurrent);
+            mMap.addMarker(markerOptions);
+            markerOptions.position(locDest);
+            mMap.addMarker(markerOptions);
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(locDest, 10));
+
         } else {
             Log.d("Error", "Location not found");
         }
+
     }
 
 }
