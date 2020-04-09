@@ -5,6 +5,10 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.util.Log;
 
+import com.byteowls.jopencage.JOpenCageGeocoder;
+import com.byteowls.jopencage.model.JOpenCageForwardRequest;
+import com.byteowls.jopencage.model.JOpenCageLatLng;
+import com.byteowls.jopencage.model.JOpenCageResponse;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.GeoApiContext;
 import com.google.maps.GeocodingApi;
@@ -20,15 +24,24 @@ import java.util.Locale;
 public class MapHelper {
 
     private static GeoApiContext geoApiContext;
+    private static JOpenCageGeocoder jOpenCageGeocoder;
 
     public MapHelper() {
     }
 
     public static LatLng getLocation(String locationText) throws InterruptedException, ApiException, IOException {
 
-        GeocodingApiRequest request = GeocodingApi.geocode(geoApiContext, locationText);
+        JOpenCageForwardRequest request = new JOpenCageForwardRequest(locationText);
+        request.setRestrictToCountryCode("NL");
 
-        Log.d("response", Arrays.toString(request.await()));
+        JOpenCageResponse response = jOpenCageGeocoder.forward(request);
+        JOpenCageLatLng result = response.getFirstPosition();
+
+        Log.d("Result", result.toString());
+
+//        GeocodingApiRequest request = GeocodingApi.geocode(geoApiContext, locationText);
+//
+//        Log.d("response", Arrays.toString(request.await()));
 
 //        Geocoder geocoder = new Geocoder(context, Locale.getDefault());
 //
@@ -47,8 +60,7 @@ public class MapHelper {
     }
 
     public static void initializeMaps() {
-//        Log.d("KEY", System.getProperty("GOOGLE_MAPS_API_KEY"));
-        geoApiContext = new GeoApiContext.Builder().apiKey("AIzaSyBlCCExAkd_rpY582UmrCOdhfyyHXGY4yo").build();
+        jOpenCageGeocoder = new JOpenCageGeocoder("8435298977184b45bd1157a149b04c86");
     }
 
 }
