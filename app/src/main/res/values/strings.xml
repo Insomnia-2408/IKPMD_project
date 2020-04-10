@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">IKPMD_project</string>
+    <string name="vul_hier_uw_huidige_locatie_in">Vul hier uw huidige locatie in:</string>
+    <string name="vul_hier_uw_bestemming_in">Vul hier uw bestemming in:</string>
+    <string name="toon_op_map">Toon op map</string>
+    <string name="title_activity_route">Map</string>
+    <string name="title">Bevestig</string>
 </resources>
