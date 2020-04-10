@@ -193,9 +193,9 @@ public class RouteActivity extends FragmentActivity implements OnMapReadyCallbac
 
             MarkerOptions markerOptions = new MarkerOptions();
             markerOptions.position(locCurrent);
-            mMap.addMarker(markerOptions);
+            mMap.addMarker(markerOptions).setTitle("Huidige locatie");
             markerOptions.position(locDest);
-            mMap.addMarker(markerOptions);
+            mMap.addMarker(markerOptions).setTitle("Bestemming");
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(locDest, 10));
 
         } else {
