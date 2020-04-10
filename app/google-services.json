@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "126031776340",
+    "firebase_url": "https://ikpmd-273517.firebaseio.com",
+    "project_id": "ikpmd-273517",
+    "storage_bucket": "ikpmd-273517.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:126031776340:android:6f64848a37cd2baa73fbc1",
+        "android_client_info": {
+          "package_name": "com.hsleiden.ikpmd_project"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "126031776340-ns8mta0cgmdtq17p27u6bj7659ipgcde.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBpul5jnLjfXLRL3OXrnOgzsHu9ac1Iaj8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "126031776340-ns8mta0cgmdtq17p27u6bj7659ipgcde.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

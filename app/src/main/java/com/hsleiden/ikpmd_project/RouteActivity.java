@@ -29,6 +29,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.hsleiden.ikpmd_project.Helpers.DatabaseHelper;
 import com.hsleiden.ikpmd_project.Helpers.DatabaseInfo;
+import com.hsleiden.ikpmd_project.Helpers.FirebaseHelper;
 import com.hsleiden.ikpmd_project.Helpers.MapHelper;
 import com.hsleiden.ikpmd_project.Helpers.PopupHelper;
 import com.hsleiden.ikpmd_project.Models.Route;
@@ -114,6 +115,8 @@ public class RouteActivity extends FragmentActivity implements OnMapReadyCallbac
         values.put(DatabaseInfo.RouteColumn.STARTLATNG, this.route.getStartLatLng().toString());
         values.put(DatabaseInfo.RouteColumn.ENDLATNG, this.route.getEndLatLng().toString());
         db.insert(DatabaseInfo.RouteTable.ROUTETABLE, null, values);
+        FirebaseHelper.addRoute(route);
+        finish();
     }
 
     /**
@@ -193,9 +196,9 @@ public class RouteActivity extends FragmentActivity implements OnMapReadyCallbac
 
             MarkerOptions markerOptions = new MarkerOptions();
             markerOptions.position(locCurrent);
-            mMap.addMarker(markerOptions);
+            mMap.addMarker(markerOptions).setTitle("Huidige locatie");
             markerOptions.position(locDest);
-            mMap.addMarker(markerOptions);
+            mMap.addMarker(markerOptions).setTitle("Bestemming");
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(locDest, 10));
 
         } else {
