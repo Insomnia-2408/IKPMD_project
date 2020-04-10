@@ -4,7 +4,6 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.google.maps.GeoApiContext;
 import com.ktopencage.OpenCageGeoCoder;
 import com.ktopencage.ResponseException;
 import com.ktopencage.model.OpenCageRequest;
@@ -13,13 +12,11 @@ import com.ktopencage.model.OpenCageResult;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 public class MapHelper extends AsyncTask<String, Void, List<LatLng>> {
 
-    private static GeoApiContext geoApiContext;
     private static OpenCageGeoCoder openCageGeocoder;
 
     public MapHelper() {

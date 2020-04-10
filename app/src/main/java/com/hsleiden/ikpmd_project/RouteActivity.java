@@ -4,10 +4,13 @@ import androidx.annotation.RequiresApi;
 import androidx.fragment.app.FragmentActivity;
 
 import android.app.Dialog;
+import android.content.ContentValues;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -24,11 +27,11 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.hsleiden.ikpmd_project.Helpers.DatabaseHelper;
+import com.hsleiden.ikpmd_project.Helpers.DatabaseInfo;
 import com.hsleiden.ikpmd_project.Helpers.MapHelper;
 import com.hsleiden.ikpmd_project.Helpers.PopupHelper;
 import com.hsleiden.ikpmd_project.Models.Route;
-
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -89,7 +92,7 @@ public class RouteActivity extends FragmentActivity implements OnMapReadyCallbac
 
             @Override
             public void onClick(View v) {
-              Log.d("Succes", "true");
+              storeData();
             }
         });
 
@@ -101,6 +104,16 @@ public class RouteActivity extends FragmentActivity implements OnMapReadyCallbac
             addContentView(toolbar, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
         }
 
+    }
+
+    private void storeData() {
+        DatabaseHelper db = DatabaseHelper.getHelper(this);
+        ContentValues values = new ContentValues();
+        values.put(DatabaseInfo.RouteColumn.START, this.route.getStart());
+        values.put(DatabaseInfo.RouteColumn.END, this.route.getEnd());
+        values.put(DatabaseInfo.RouteColumn.STARTLATNG, this.route.getStartLatLng().toString());
+        values.put(DatabaseInfo.RouteColumn.ENDLATNG, this.route.getEndLatLng().toString());
+        db.insert(DatabaseInfo.RouteTable.ROUTETABLE, null, values);
     }
 
     /**
