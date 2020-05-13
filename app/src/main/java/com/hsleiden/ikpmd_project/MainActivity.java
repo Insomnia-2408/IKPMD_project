@@ -1,5 +1,6 @@
 package com.hsleiden.ikpmd_project;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -27,14 +28,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
-        makeToast();
         setClickListener();
+        loadData();
 
-    }
-
-    private void makeToast() {
-        Toast.makeText(this, "Hallo!", Toast.LENGTH_SHORT).show();
     }
 
     private void setClickListener() {
@@ -43,10 +41,13 @@ public class MainActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this, RouteActivity.class));
+                startActivityForResult(new Intent(MainActivity.this, RouteActivity.class), 1);
             }
         });
 
+    }
+
+    public void loadData() {
         Route[] routes = {};
         List<Route> tempRoutes = new ArrayList<Route>();
 
@@ -74,8 +75,13 @@ public class MainActivity extends AppCompatActivity {
         ListHelper helper = new ListHelper(this, this, routes, R.layout.layout);
 
         routesList.setAdapter(helper);
-        Log.d("ROUTES", String.valueOf(routes));
-
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        loadData();
+
+    }
 }

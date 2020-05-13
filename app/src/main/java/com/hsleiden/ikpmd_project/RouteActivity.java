@@ -5,6 +5,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import android.app.Dialog;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -27,6 +28,8 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.hsleiden.ikpmd_project.Helpers.DatabaseHelper;
 import com.hsleiden.ikpmd_project.Helpers.DatabaseInfo;
 import com.hsleiden.ikpmd_project.Helpers.FirebaseHelper;
@@ -116,7 +119,17 @@ public class RouteActivity extends FragmentActivity implements OnMapReadyCallbac
         values.put(DatabaseInfo.RouteColumn.ENDLATNG, this.route.getEndLatLng().toString());
         db.insert(DatabaseInfo.RouteTable.ROUTETABLE, null, values);
         FirebaseHelper.addRoute(route);
+
+        endActivity();
+
+    }
+
+    private void endActivity() {
+
+        Intent intent=new Intent();
+        setResult(2,intent);
         finish();
+
     }
 
     /**
@@ -200,6 +213,11 @@ public class RouteActivity extends FragmentActivity implements OnMapReadyCallbac
             markerOptions.position(locDest);
             mMap.addMarker(markerOptions).setTitle("Bestemming");
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(locDest, 10));
+
+            Polyline line = mMap.addPolyline(new PolylineOptions()
+                    .add(locCurrent, locDest)
+                    .width(5)
+                    .color(Color.RED));
 
         } else {
             Toast toast = new Toast(this);
