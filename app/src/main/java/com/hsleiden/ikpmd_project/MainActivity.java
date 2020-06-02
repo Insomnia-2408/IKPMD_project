@@ -48,8 +48,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void loadData() {
-        Route[] routes = {};
-        List<Route> tempRoutes = new ArrayList<Route>();
 
         ListView routesList = findViewById(R.id.routeList);
         routesList.setPadding(30, 0, 30, 0);
@@ -57,22 +55,8 @@ public class MainActivity extends AppCompatActivity {
         routesList.setVisibility(View.VISIBLE);
 
         DatabaseHelper db = DatabaseHelper.getHelper(this);
-        Cursor cursor = db.query(DatabaseInfo.RouteTable.ROUTETABLE, new String[] {"*"}, null, null, null, null, null);
-        if (cursor.moveToFirst()) {
-            int index = 0;
-            while (!cursor.isAfterLast()) {
-                Route route = new Route();
-                route.setStart(cursor.getString(cursor.getColumnIndex(DatabaseInfo.RouteColumn.START)));
-                route.setEnd(cursor.getString(cursor.getColumnIndex(DatabaseInfo.RouteColumn.END)));
-                tempRoutes.add(route);
-                index ++;
-                cursor.moveToNext();
-            }
-        }
 
-        routes = tempRoutes.toArray(routes);
-
-        ListHelper helper = new ListHelper(this, this, routes, R.layout.layout);
+        ListHelper helper = new ListHelper(this, this, db.getRoutesFromDB(), R.layout.layout);
 
         routesList.setAdapter(helper);
     }

@@ -24,7 +24,9 @@ public class MapHelper extends AsyncTask<String, Void, List<LatLng>> {
 
     @Override
     protected List<LatLng> doInBackground(String... strings) {
+
         List<LatLng> latLongs = new ArrayList<LatLng>();
+
         for(String adress : strings) {
             OpenCageRequest request = new OpenCageRequest(adress);
             request.setRestrictToCountryCode("NL");

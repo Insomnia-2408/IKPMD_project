@@ -108,4 +108,16 @@ public class PopupHelper {
 
     }
 
+    public Dialog alert(String description) {
+
+        Dialog dialog = this.builder
+                .setTitle("Let op!")
+                .setMessage(description)
+                .setNegativeButton("Sluit", null)
+                .setView(null)
+                .create();
+
+        return dialog;
+    }
+
 }

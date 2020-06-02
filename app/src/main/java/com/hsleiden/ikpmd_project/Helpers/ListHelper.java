@@ -50,8 +50,8 @@ public class ListHelper extends BaseAdapter {
         TextView textStart = (TextView) convertView.findViewById(R.id.textStart);
         TextView textEnd = (TextView) convertView.findViewById(R.id.textEnd);
 
-        textStart.setText("Start: " + routes[position].getStart());
-        textEnd.setText("Einde: " + routes[position].getEnd());
+        textStart.setText("Start: \n" + routes[position].getStart());
+        textEnd.setText("Einde: \n" + routes[position].getEnd());
 
         return convertView;
     }

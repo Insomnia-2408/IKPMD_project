@@ -7,6 +7,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 
+import com.hsleiden.ikpmd_project.Models.Route;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static SQLiteDatabase mSQLDB;
     private static DatabaseHelper mInstance;
@@ -55,4 +60,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public Cursor query(String table, String[] columns, String selection, String[] selectArgs, String groupBy, String having, String orderBy){
         return mSQLDB.query(table, columns, selection, selectArgs, groupBy, having, orderBy);
     }
+
+    public Route[] getRoutesFromDB() {
+
+        List<Route> routes = new ArrayList<>();
+        Route[] routesArray = {};
+        Cursor cursor = this.query(DatabaseInfo.RouteTable.ROUTETABLE, new String[] {"*"}, null, null, null, null, null);
+        if (cursor.moveToFirst()) {
+            int index = 0;
+            while (!cursor.isAfterLast()) {
+                Route route = new Route();
+                route.setStart(cursor.getString(cursor.getColumnIndex(DatabaseInfo.RouteColumn.START)));
+                route.setEnd(cursor.getString(cursor.getColumnIndex(DatabaseInfo.RouteColumn.END)));
+                routes.add(route);
+                index ++;
+                cursor.moveToNext();
+            }
+        }
+
+        routesArray = routes.toArray(routesArray);
+        return routesArray;
+    }
+
 }

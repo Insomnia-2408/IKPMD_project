@@ -5,6 +5,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import android.app.Dialog;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -34,6 +35,7 @@ import com.hsleiden.ikpmd_project.Helpers.DatabaseHelper;
 import com.hsleiden.ikpmd_project.Helpers.DatabaseInfo;
 import com.hsleiden.ikpmd_project.Helpers.FirebaseHelper;
 import com.hsleiden.ikpmd_project.Helpers.MapHelper;
+import com.hsleiden.ikpmd_project.Helpers.NetworkHelper;
 import com.hsleiden.ikpmd_project.Helpers.PopupHelper;
 import com.hsleiden.ikpmd_project.Models.Route;
 
@@ -183,14 +185,20 @@ public class RouteActivity extends FragmentActivity implements OnMapReadyCallbac
         this.route.setStart(currentLocationText);
         this.route.setEnd(destinationText);
 
-        addMarkers(currentLocationText, destinationText);
+        NetworkHelper networkHelper = NetworkHelper.getHelper(getApplicationContext());
+        if(networkHelper.isNetworkAvailable()) {
+            addMarkers(currentLocationText, destinationText);
+        } else {
+            Dialog dialog = popup.alert("Er is geen internetverbinding, probeer het later opnieuw.");
+            dialog.show();
+            dialog.setOnDismissListener(dialog1 -> endActivity());
+        }
 
     }
 
     private void addMarkers(String currentLocation, String destination) {
 
         AsyncTask<String, Void, List<LatLng>> result = null;
-
         result = this.mapHelper.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, currentLocation, destination);
 
         LatLng locCurrent = null;
