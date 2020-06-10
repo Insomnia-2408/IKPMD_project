@@ -15,7 +15,7 @@ import java.util.List;
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static SQLiteDatabase mSQLDB;
     private static DatabaseHelper mInstance;
-    private static final String dbName = "cars.db";
+    private static final String dbName = "routes.db";
     private static final int dbVersion = 1;		// Versie nr van je db.
 
     private DatabaseHelper(Context ctx) {
